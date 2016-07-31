@@ -1,0 +1,55 @@
+---
+title: "hw3"
+author: "Ahmed S"
+date: "July 29, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#install.packages("RCurl")
+
+library(RCurl)
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data"
+mushroom_data <-getURL (url)
+
+mushroom_df <- read.csv(text=mushroom_data, header=F, sep=",", stringsAsFactors = FALSE)
+mushroom_df <- mushroom_df [, c(1, 2, 3, 4)]
+
+#Column-1 (edible=e, poisonous=p)
+mushroom_df$V1[mushroom_df$V1=="p"] <- "Poisonous"
+mushroom_df$V1[mushroom_df$V1=="e"] <- "Edible"
+
+#Column-2 (bell=b,conical=c,convex=x,flat=f, knobbed=k,sunken=s)
+mushroom_df$V2[mushroom_df$V2=="b"] <- "Bell"
+mushroom_df$V2[mushroom_df$V2=="c"] <- "Conical"
+mushroom_df$V2[mushroom_df$V2=="f"] <- "Flat"
+mushroom_df$V2[mushroom_df$V2=="k"] <- "Knobbed"
+mushroom_df$V2[mushroom_df$V2=="s"] <- "Sunken"
+mushroom_df$V2[mushroom_df$V2=="x"] <- "Convex"
+
+#Column-3 (fibrous=f,grooves=g,scaly=y,smooth=s)
+mushroom_df$V3[mushroom_df$V3=="f"] <- "Fibrous"
+mushroom_df$V3[mushroom_df$V3=="g"] <- "Grooves"
+mushroom_df$V3[mushroom_df$V3=="s"] <- "Smooth"
+mushroom_df$V3[mushroom_df$V3=="y"] <- "Scaly"
+
+#Column-4 (buff=b,cinnamon=c,red=e,gray=g,brown=n,pink=p,green=r,purple=u,white=w,yellow=y)
+mushroom_df$V4[mushroom_df$V4=="b"] <- "Buff"
+mushroom_df$V4[mushroom_df$V4=="c"] <- "Cinnamon"
+mushroom_df$V4[mushroom_df$V4=="e"] <- "Red"
+mushroom_df$V4[mushroom_df$V4=="g"] <- "Gray"
+mushroom_df$V4[mushroom_df$V4=="n"] <- "Brown"
+mushroom_df$V4[mushroom_df$V4=="p"] <- "Pink"
+mushroom_df$V4[mushroom_df$V4=="r"] <- "Green" 
+mushroom_df$V4[mushroom_df$V4=="u"] <- "Purple"
+mushroom_df$V4[mushroom_df$V4=="w"] <- "White"
+mushroom_df$V4[mushroom_df$V4=="y"] <- "Yellow"
+
+colnames(mushroom_df) <- c("Classes","Cap Shape", "Cap Surface","Cap Color")
+head(mushroom_df, n=50)
+```
