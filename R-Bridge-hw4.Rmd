@@ -1,0 +1,41 @@
+---
+title: "Homework-4"
+author: "A.S"
+date: "August 7, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Read CSV into R
+```{r}
+AirQualityData = read.csv(file="airquality.csv", header=TRUE, sep=",")
+
+#O3 - Ozone
+#NO2 - Nitrogen dioxide
+#NO - Nitric oxide
+#SO2 - Sulfur dioxide
+#PM10 - Particulate Matter of less than 10 millionths of a metre
+
+head(AirQualityData)
+summary(AirQualityData)
+
+
+#install.packages(c("ggplot2","gcookbook"))
+#install.packages("ggplot2")
+library(ggplot2)
+library(gcookbook)
+
+
+#Histogram
+ggplot(AirQualityData, aes(x=Temperature)) + geom_histogram(binwidth=1)
+
+boxplot(Temperature ~ Month, xlab="Month", ylab="Temperature", data=AirQualityData)
+
+#Scatterplot
+ggplot(AirQualityData, aes(x=Temperature, y=Ozone)) + geom_point(shape=1)
+
+
+```
