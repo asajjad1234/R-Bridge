@@ -1,0 +1,133 @@
+---
+title: "R-Bridge-Final"
+author: "A.S"
+date: "August 9, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Final Project Description
+
+This project is where you show off your ability to  
+(1) use R packages  
+(2) change the shape of data in a data frame  
+(3) provide basic summary statistics and graphics as part of your exploratory data analysis.
+
+. You should start by installing and loading the R package hflights, which is available on CRAN and described here: https://cran.r-project.org/web/packages/hflights/hflights.pdf
+
+. You should perform some basic transformations on the data frame, such as including only a subset of columns, created one or more new derived columns (such as flight date), and/or filtering out rows.
+
+. You should then create basic summary statistics. You should create at least one interesting question for analysis, and answer the question using two or more graphics in R.
+
+```{r}
+#install.packages("hflights")
+
+library(ggplot2)
+library(gcookbook)
+library(hflights)
+library(sqldf)
+```
+
+####Get the number of rows in the dataset
+```{r}
+nrow(hflights)
+```
+
+####Get the number of columns in the dataset
+```{r}
+ncol(hflights)
+```
+
+####Get column names in the dataset
+```{r}
+colnames(hflights)
+```
+
+####Check the first 10 rows of the dataset
+```{r}
+head(hflights, n=10)
+```
+
+####Select only required columns
+```{r}
+hflights_df = hflights[c("UniqueCarrier","Month","DayofMonth", "Year",
+                         "Origin","Dest","DepTime", "ArrTime", "DepDelay", "ArrDelay",
+                         "Cancelled","CancellationCode")]
+head(hflights_df, 10)
+```
+
+
+####Extract column UniqueCarrier into a dataframe carrier_df
+```{r}
+carrier_df = hflights_df [c("UniqueCarrier")]
+```
+
+####Check the number of rows in the data frame carrier_df. Make sure you have all the rows
+```{r}
+nrow(carrier_df)
+```
+
+#### Plot a Bar Graph for each Carrier type. Display Carrier on X-axis and Carrier Count on Y-axis
+```{r}
+ggplot(carrier_df, aes(x=UniqueCarrier), stat="count") + geom_bar(fill="#AFFAAA", color="black")
+```
+
+#### What are the different origins and their count of flights?
+```{r}
+origins_df=sqldf("select Origin, count(*) As NumberOfFlights from hflights_df group by Origin")
+print(origins_df)
+ggplot(origins_df, aes(x=Origin, y=NumberOfFlights)) + geom_bar(fill="#9999ff", color="black", stat="identity")
+```  
+
+#### What are the top 20 destinations and thier counts of flights?
+```{r}
+destinations_df = sqldf("select Dest, NumberOfFlights from (select Dest, count(*) As NumberOfFlights from hflights_df group by Dest) order by NumberOfFlights desc")
+nrow(destinations_df)
+destinations_df = head(destinations_df, 20)
+print (destinations_df)
+ggplot(destinations_df, aes(x=Dest, y=NumberOfFlights)) + geom_bar(fill="#ff6666", color="black", stat="identity")
+```
+
+
+#### Add a new column called flight date and find the number of flights in each month
+```{r}
+
+hflights_df$Date = paste( hflights_df$Month , hflights_df$DayofMonth , hflights_df$Year, sep = "/" )
+hflights_df$MonthStr [hflights_df$Month=="1"]  = "01"
+hflights_df$MonthStr [hflights_df$Month=="2"]  = "02"
+hflights_df$MonthStr [hflights_df$Month=="3"]  = "03"
+hflights_df$MonthStr [hflights_df$Month=="4"]  = "04"
+hflights_df$MonthStr [hflights_df$Month=="5"]  = "05"
+hflights_df$MonthStr [hflights_df$Month=="6"]  = "06"
+hflights_df$MonthStr [hflights_df$Month=="7"]  = "07"
+hflights_df$MonthStr [hflights_df$Month=="8"]  = "08"
+hflights_df$MonthStr [hflights_df$Month=="9"]  = "09"
+hflights_df$MonthStr [hflights_df$Month=="10"] = "10"
+hflights_df$MonthStr [hflights_df$Month=="11"] = "11"
+hflights_df$MonthStr [hflights_df$Month=="12"] = "12"
+```
+
+#### Group flights for each month 
+
+```{r}
+monthly_df=sqldf("select MonthStr, count(*) As NumberOfFlights from hflights_df group by MonthStr")
+print(monthly_df)
+ggplot(monthly_df, aes(x=MonthStr, y=NumberOfFlights)) + geom_bar(fill="#8877aa", color="black", stat="identity")
+
+```
+
+#### Find which months have the highest and lowest flights?
+```{r}
+monthly_df_sorted = sqldf("select MonthStr As Month, NumberOfFlights from monthly_df order by NumberOfFlights desc")
+head(monthly_df_sorted, 12)
+```
+
+####Confirm that all columns are added 
+```{r}
+head(hflights_df, n=10)
+
+```
+
